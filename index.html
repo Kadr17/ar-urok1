@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Смартфон — AR модель</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif;background:#101827}
+    #panel{position:fixed;z-index:10;top:12px;left:12px;right:12px;color:white;text-align:center;pointer-events:none;text-shadow:0 1px 5px #000}
+    #panel h1{font-size:18px;margin:0 0 6px}#status{font-size:13px;margin:0 auto;max-width:330px}
+    #controls{position:fixed;z-index:20;bottom:20px;left:0;right:0;display:flex;justify-content:center;gap:10px;padding:0 12px}
+    button{border:0;border-radius:24px;padding:12px 17px;font-size:14px;font-weight:700;background:#fff;color:#172033;box-shadow:0 3px 12px #0005}
+    #fallback{display:none;position:fixed;z-index:30;inset:auto 12px 82px;background:#fff;color:#111;padding:12px;border-radius:12px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div id="panel"><h1>📱 Смартфонның 3D моделі</h1><p id="status">Камераға оқулықтағы толық суретті көрсетіңіз.</p></div>
+  <div id="fallback">Алдымен <b>targets.mind</b> файлын жобаға қосыңыз. Нұсқаулық README.txt ішінде.</div>
+  <div id="controls"><button id="rotate">↻ Айналдыру</button><button id="scaleUp">＋ Үлкейту</button><button id="scaleDown">－ Кішірейту</button></div>
+  <a-scene id="scene"
+    mindar-image="imageTargetSrc: ./targets.mind; autoStart: true;"
+    color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights: true"
+    vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false"
+    embedded loading-screen="enabled: false">
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <a-entity id="target" mindar-image-target="targetIndex: 0">
+      <!-- The target image is 768x512. The phone in it is near x=0.41, y=0.17. -->
+      <a-entity id="phone" position="-0.09 0.22 0.025" scale="1 1 1">
+        <!-- phone body -->
+        <a-box width="0.061" height="0.142" depth="0.009" radius="0.006" color="#11151c" material="metalness:0.55; roughness:0.28"></a-box>
+        <!-- front glass -->
+        <a-box position="0 0 0.0052" width="0.054" height="0.132" depth="0.0012" color="#050a14" material="roughness:0.18"></a-box>
+        <!-- screen -->
+        <a-plane position="0 0 0.0062" width="0.050" height="0.122" material="shader: flat; color:#142b55"></a-plane>
+        <!-- colorful home screen wallpaper -->
+        <a-plane position="-0.007 0.012 0.0068" width="0.035" height="0.076" material="shader: flat; color:#1d72d8; opacity:0.95"></a-plane>
+        <a-circle position="0.009 -0.014 0.007" radius="0.022" material="shader:flat; color:#26c6da; opacity:0.8"></a-circle>
+        <a-circle position="-0.009 0.028 0.0071" radius="0.014" material="shader:flat; color:#8055e8; opacity:0.9"></a-circle>
+        <!-- app icons -->
+        <a-plane position="-0.015 0.038 0.0075" width="0.009" height="0.009" color="#4ade80"></a-plane>
+        <a-plane position="0 0.038 0.0075" width="0.009" height="0.009" color="#fb7185"></a-plane>
+        <a-plane position="0.015 0.038 0.0075" width="0.009" height="0.009" color="#facc15"></a-plane>
+        <a-plane position="-0.015 0.022 0.0075" width="0.009" height="0.009" color="#60a5fa"></a-plane>
+        <a-plane position="0 0.022 0.0075" width="0.009" height="0.009" color="#f97316"></a-plane>
+        <a-plane position="0.015 0.022 0.0075" width="0.009" height="0.009" color="#c084fc"></a-plane>
+        <a-plane position="-0.015 0.006 0.0075" width="0.009" height="0.009" color="#f87171"></a-plane>
+        <a-plane position="0 0.006 0.0075" width="0.009" height="0.009" color="#34d399"></a-plane>
+        <a-plane position="0.015 0.006 0.0075" width="0.009" height="0.009" color="#fbbf24"></a-plane>
+        <!-- speaker and camera notch -->
+        <a-box position="0 0.061 0.008" width="0.013" height="0.002" depth="0.001" color="#02040a"></a-box>
+        <a-circle position="0.009 0.061 0.0082" radius="0.0015" color="#25364d"></a-circle>
+        <!-- bottom navigation mark -->
+        <a-box position="0 -0.057 0.008" width="0.016" height="0.0015" depth="0.0005" color="#e5e7eb"></a-box>
+        <!-- side buttons -->
+        <a-box position="-0.031 0.025 0" width="0.002" height="0.018" depth="0.003" color="#737985"></a-box>
+        <a-box position="0.031 0.02 0" width="0.002" height="0.022" depth="0.003" color="#737985"></a-box>
+      </a-entity>
+    </a-entity>
+  </a-scene>
+  <script>
+    const statusText = document.getElementById('status');
+    const phone = document.getElementById('phone');
+    let angle = 0, size = 1;
+    document.getElementById('rotate').addEventListener('click', () => {
+      angle += Math.PI / 5;
+      phone.object3D.rotation.y = angle;
+    });
+    document.getElementById('scaleUp').addEventListener('click', () => {
+      size = Math.min(2.0, size + 0.15); phone.setAttribute('scale', `${size} ${size} ${size}`);
+    });
+    document.getElementById('scaleDown').addEventListener('click', () => {
+      size = Math.max(0.55, size - 0.15); phone.setAttribute('scale', `${size} ${size} ${size}`);
+    });
+    document.getElementById('target').addEventListener('targetFound', () => statusText.textContent = 'Сурет табылды! 3D смартфонды қараңыз.');
+    document.getElementById('target').addEventListener('targetLost', () => statusText.textContent = 'Суретке камераны қайта бағыттаңыз.');
+    document.getElementById('scene').addEventListener('arReady', () => statusText.textContent = 'Камераға оқулықтағы толық суретті көрсетіңіз.');
+    setTimeout(() => {
+      if (!document.querySelector('a-scene').hasLoaded) document.getElementById('fallback').style.display = 'block';
+    }, 8000);
+  </script>
+</body>
+</html>
